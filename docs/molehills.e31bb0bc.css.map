@@ -1,1 +1,1 @@
-{"version":3,"sources":["styles.scss"],"names":[],"mappings":"AAAA","file":"molehills.e31bb0bc.css","sourceRoot":"..","sourcesContent":[""]}
+{"version":3,"sources":["styles.scss"],"names":[],"mappings":"AAAA;EACI;EACA","file":"molehills.e31bb0bc.css","sourceRoot":"..","sourcesContent":["#completedTasks {\r\n    color: grey;\r\n    text-decoration: line-through;\r\n}"]}

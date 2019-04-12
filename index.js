@@ -1,4 +1,4 @@
-// import './styles.scss';
+import './styles.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
@@ -9,6 +9,7 @@ import { createStore } from 'redux';
 // ---------------------------------------------------------------------
 
 const ADD = 'ADD'
+const COMP = 'COMP'
 
 // function for adding a task to the state
 
@@ -19,12 +20,27 @@ const addTask = (task) => {
     }
 };
 
+//function for completing a task
+
+const compTask = (task) => {
+    return {
+        type: COMP,
+        task
+    }
+}
+
 // reducer for the tasklist
 
-const taskReducer = (state = [], action) => {
+const taskReducer = (state = [[],[]], action) => {
     switch(action.type) {
         case ADD: 
-            return state.concat(action.task);
+            return [state[0].concat(action.task), [...state[1]]];
+        case COMP:
+            let idx = indexOf(state[0].filter(action.task));
+            let beg = state.slice(0, idx);
+            let end = state.slice(idx + 1);
+            let newState = [[...beg, ...end], [...state[1], action.task]];
+            return newState;
         default: 
             return state;
     }
@@ -48,6 +64,7 @@ class Molehills extends React.Component {
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.submitHandler = this.submitHandler.bind(this);
+        this.completeHandler = this.completeHandler.bind(this);
     }
     changeHandler(event) {
         this.setState ({
@@ -59,7 +76,10 @@ class Molehills extends React.Component {
         this.setState ({
           input: '',
         })
-      }
+    }
+    completeHandler(target) {
+        this.props.completeTask(target)
+    }
     render() {
         return (
             <div id='mainapp'>
@@ -71,8 +91,16 @@ class Molehills extends React.Component {
                     <button 
                         id = 'submitGoal'
                         onClick = {this.submitHandler} >Submit</button>
-                    <ul>
+                    <ul id = 'currentTasks'>
                         {this.props.tasks.map( (task, idx) => {
+                            return (
+                                <li onKeyDown = {this.completeHandler(event.target)} key={idx}>{task}</li>
+                            )
+                        })
+                    }
+                    </ul>
+                    <ul id = 'completedTasks'>
+                        {this.props.compTasks.map( (task, idx) => {
                             return (
                                 <li key={idx}>{task}</li>
                             )
@@ -91,14 +119,18 @@ class Molehills extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        tasks: state
+        tasks: state[0],
+        compTasks: state[1]
     }
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        submitNewTask: (newTask) => {
-            dispatch(addTask(newTask))
+        submitNewTask: (nTask) => {
+            dispatch(addTask(nTask))
+        },
+        completeTask: (cTask) => {
+            dispatch(compTask(cTask))
         }
     }
 };

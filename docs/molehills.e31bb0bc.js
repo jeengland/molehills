@@ -117,7 +117,79 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"node_modules/object-assign/index.js":[function(require,module,exports) {
+})({"node_modules/parcel/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"node_modules/parcel/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"node_modules/parcel/src/builtins/bundle-url.js"}],"styles.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"node_modules/parcel/src/builtins/css-loader.js"}],"node_modules/object-assign/index.js":[function(require,module,exports) {
 /*
 object-assign
 (c) Sindre Sorhus
@@ -28829,6 +28901,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 },{"./components/Provider":"node_modules/react-redux/es/components/Provider.js","./components/connectAdvanced":"node_modules/react-redux/es/components/connectAdvanced.js","./components/Context":"node_modules/react-redux/es/components/Context.js","./connect/connect":"node_modules/react-redux/es/connect/connect.js","./utils/batch":"node_modules/react-redux/es/utils/batch.js","./utils/reactBatchedUpdates":"node_modules/react-redux/es/utils/reactBatchedUpdates.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
+require("./styles.scss");
+
 var _react = _interopRequireDefault(require("react"));
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
@@ -28857,26 +28931,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 // ---------------------------------------------------------------------
 // redux store 
 // ---------------------------------------------------------------------
-var ADD = 'ADD'; // function for adding a task to the state
+var ADD = 'ADD';
+var COMP = 'COMP'; // function for adding a task to the state
 
 var addTask = function addTask(task) {
   return {
     type: ADD,
     task: task
   };
+}; //function for completing a task
+
+
+var compTask = function compTask(task) {
+  return {
+    type: COMP,
+    task: task
+  };
 }; // reducer for the tasklist
 
 
 var taskReducer = function taskReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [[], []];
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
     case ADD:
-      return state.concat(action.task);
+      return [state[0].concat(action.task), _toConsumableArray(state[1])];
+
+    case COMP:
+      var idx = indexOf(state[0].filter(action.task));
+      var beg = state.slice(0, idx);
+      var end = state.slice(idx + 1);
+      var newState = [[].concat(_toConsumableArray(beg), _toConsumableArray(end)), [].concat(_toConsumableArray(state[1]), [action.task])];
+      return newState;
 
     default:
       return state;
@@ -28904,6 +29002,7 @@ function (_React$Component) {
     };
     _this.changeHandler = _this.changeHandler.bind(_assertThisInitialized(_this));
     _this.submitHandler = _this.submitHandler.bind(_assertThisInitialized(_this));
+    _this.completeHandler = _this.completeHandler.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -28923,8 +29022,15 @@ function (_React$Component) {
       });
     }
   }, {
+    key: "completeHandler",
+    value: function completeHandler(target) {
+      this.props.completeTask(target);
+    }
+  }, {
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       return _react.default.createElement("div", {
         id: "mainapp"
       }, _react.default.createElement("div", {
@@ -28936,7 +29042,16 @@ function (_React$Component) {
       }), _react.default.createElement("button", {
         id: "submitGoal",
         onClick: this.submitHandler
-      }, "Submit"), _react.default.createElement("ul", null, this.props.tasks.map(function (task, idx) {
+      }, "Submit"), _react.default.createElement("ul", {
+        id: "currentTasks"
+      }, this.props.tasks.map(function (task, idx) {
+        return _react.default.createElement("li", {
+          onKeyDown: _this2.completeHandler(event.target),
+          key: idx
+        }, task);
+      })), _react.default.createElement("ul", {
+        id: "completedTasks"
+      }, this.props.compTasks.map(function (task, idx) {
         return _react.default.createElement("li", {
           key: idx
         }, task);
@@ -28952,14 +29067,18 @@ function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    tasks: state
+    tasks: state[0],
+    compTasks: state[1]
   };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
-    submitNewTask: function submitNewTask(newTask) {
-      dispatch(addTask(newTask));
+    submitNewTask: function submitNewTask(nTask) {
+      dispatch(addTask(nTask));
+    },
+    completeTask: function completeTask(cTask) {
+      dispatch(compTask(cTask));
     }
   };
 };
@@ -28993,7 +29112,7 @@ function (_React$Component2) {
 var rootDiv = document.getElementById('root');
 
 _reactDom.default.render(_react.default.createElement(Wrapper, null), rootDiv);
-},{"react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","react-redux":"node_modules/react-redux/es/index.js","redux":"../../../node_modules/redux/es/redux.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./styles.scss":"styles.scss","react":"node_modules/react/index.js","react-dom":"node_modules/react-dom/index.js","react-redux":"node_modules/react-redux/es/index.js","redux":"../../../node_modules/redux/es/redux.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -29021,7 +29140,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61791" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64523" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

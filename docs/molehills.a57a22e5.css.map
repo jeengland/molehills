@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles.scss"],"names":[],"mappings":"AAAA,gBACI,UAAA,CACA","file":"molehills.a57a22e5.css","sourceRoot":"..","sourcesContent":["#completedTasks {\r\n    color: grey;\r\n    text-decoration: line-through;\r\n}"]}

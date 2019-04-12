@@ -1,0 +1,32 @@
+{
+  "name": "molehills",
+  "version": "1.0.0",
+  "description": "A productivity app to help compartmentalize goals into achievable tasks",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html --out-dir docs",
+    "build": "parcel build index.html --out-dir docs --public-url ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeengland/molehills.git"
+  },
+  "author": "jeengland",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeengland/molehills/issues"
+  },
+  "homepage": "https://github.com/jeengland/molehills#readme",
+  "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "parcel": "^1.12.3",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^7.0.1",
+    "sass": "^1.18.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3"
+  }
+}

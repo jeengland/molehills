@@ -29023,8 +29023,8 @@ function (_React$Component) {
     }
   }, {
     key: "completeHandler",
-    value: function completeHandler(target) {
-      this.props.completeTask(target);
+    value: function completeHandler(event) {
+      this.props.completeTask(event.target);
     }
   }, {
     key: "render",
@@ -29046,7 +29046,7 @@ function (_React$Component) {
         id: "currentTasks"
       }, this.props.tasks.map(function (task, idx) {
         return _react.default.createElement("li", {
-          onClick: _this2.completeHandler(event.target),
+          onClick: _this2.completeHandler,
           key: idx
         }, task);
       })), _react.default.createElement("ul", {
@@ -29140,7 +29140,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52614" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62238" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -16,7 +16,7 @@ const COMP = 'COMP';
 const addTask = (task) => {
     return {
         type: ADD,
-        task
+        task: task
     }
 };
 
@@ -25,7 +25,7 @@ const addTask = (task) => {
 const compTask = (task) => {
     return {
         type: COMP,
-        task
+        task: task
     }
 }
 
@@ -77,8 +77,8 @@ class Molehills extends React.Component {
           input: ''
         })
     }
-    completeHandler(target) {
-        this.props.completeTask(target)
+    completeHandler(event) {
+        this.props.completeTask(event.target)
     }
     render() {
         return (
@@ -94,7 +94,7 @@ class Molehills extends React.Component {
                     <ul id = 'currentTasks'>
                         {this.props.tasks.map( (task, idx) => {
                             return (
-                                <li onClick = {this.completeHandler(event.target)} key={idx}>{task}</li>
+                                <li onClick = {this.completeHandler} key={idx}>{task}</li>
                             )
                         })
                     }

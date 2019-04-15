@@ -3,4 +3,18 @@
   text-decoration: line-through;
 }
 
+.itemWrapper {
+  display: flex;
+}
+
+.fa-trash-alt {
+  padding-left: 6px;
+  color: red;
+}
+
+.delItem:hover {
+  color: red;
+  font-weight: bold;
+}
+
 /*# sourceMappingURL=/molehills.e31bb0bc.css.map */

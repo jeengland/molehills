@@ -28943,19 +28943,28 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 // redux store 
 // ---------------------------------------------------------------------
 var ADD = 'ADD';
-var COMP = 'COMP'; // function for adding a task to the state
+var COMP = 'COMP';
+var DEL = 'DEL'; // function for adding a task to the state
 
 var addTask = function addTask(task) {
   return {
     type: ADD,
     task: task
   };
-}; //function for completing a task
+}; // function for completing a task
 
 
 var compTask = function compTask(task) {
   return {
     type: COMP,
+    task: task
+  };
+}; // function for deleting a task
+
+
+var delTask = function delTask(task) {
+  return {
+    type: DEL,
     task: task
   };
 }; // reducer for the tasklist
@@ -28976,14 +28985,24 @@ var taskReducer = function taskReducer() {
       };
 
     case COMP:
-      var idx = state.tasks.indexOf(action.task);
-      var beg = state.tasks.slice(0, idx);
-      var end = state.tasks.slice(idx + 1);
-      var newState = {
-        tasks: [].concat(_toConsumableArray(beg), _toConsumableArray(end)),
+      var cIdx = state.tasks.indexOf(action.task);
+      var cBeg = state.tasks.slice(0, cIdx);
+      var cEnd = state.tasks.slice(cIdx + 1);
+      var newStateComp = {
+        tasks: [].concat(_toConsumableArray(cBeg), _toConsumableArray(cEnd)),
         compTasks: state.compTasks.concat(action.task)
       };
-      return newState;
+      return newStateComp;
+
+    case DEL:
+      var dIdx = state.tasks.indexOf(action.task);
+      var dBeg = state.tasks.slice(0, dIdx);
+      var dEnd = state.tasks.slice(dIdx + 1);
+      var newStateDel = {
+        tasks: [].concat(_toConsumableArray(dBeg), _toConsumableArray(dEnd)),
+        compTasks: state.compTasks
+      };
+      return newStateDel;
 
     default:
       return state;
@@ -29007,11 +29026,14 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Molehills).call(this, props));
     _this.state = {
-      input: ''
+      input: '',
+      delTog: false
     };
     _this.changeHandler = _this.changeHandler.bind(_assertThisInitialized(_this));
     _this.submitHandler = _this.submitHandler.bind(_assertThisInitialized(_this));
     _this.completeHandler = _this.completeHandler.bind(_assertThisInitialized(_this));
+    _this.deleteToggleHandler = _this.deleteToggleHandler.bind(_assertThisInitialized(_this));
+    _this.deleteHandler = _this.deleteHandler.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -29036,9 +29058,36 @@ function (_React$Component) {
       this.props.completeTask(event.target.innerHTML);
     }
   }, {
+    key: "deleteToggleHandler",
+    value: function deleteToggleHandler() {
+      if (this.state.delTog) {
+        this.setState({
+          delTog: false
+        });
+      } else {
+        this.setState({
+          delTog: true
+        });
+      }
+    }
+  }, {
+    key: "deleteHandler",
+    value: function deleteHandler(event) {
+      this.props.deleteTask(event.target.innerHTML);
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
+
+      var delTog = this.state.delTog;
+      var trash;
+
+      if (delTog) {
+        trash = _react.default.createElement("i", {
+          className: "fas fa-trash-alt"
+        });
+      } else trash = null;
 
       return _react.default.createElement("div", {
         id: "mainapp"
@@ -29051,18 +29100,32 @@ function (_React$Component) {
       }), _react.default.createElement("button", {
         id: "submitGoal",
         onClick: this.submitHandler
-      }, "Submit"), _react.default.createElement("ul", {
+      }, "Submit"), _react.default.createElement("button", {
+        id: "toggleDelete",
+        onClick: this.deleteToggleHandler
+      }, "Delete Task"), trash, _react.default.createElement("ul", {
         id: "currentTasks"
       }, this.props.tasks.map(function (task, idx) {
-        return _react.default.createElement("li", {
-          onClick: _this2.completeHandler,
-          key: idx
-        }, task);
+        // maps tasks from state, with logic for the toggling of the delete button 
+        if (_this2.state.delTog) {
+          return _react.default.createElement("div", {
+            className: "itemWrapper"
+          }, _react.default.createElement("li", {
+            className: "listItem delItem",
+            onClick: _this2.deleteHandler,
+            key: 'd' + idx
+          }, task));
+        } else {
+          return _react.default.createElement("li", {
+            onClick: _this2.completeHandler,
+            key: idx
+          }, task);
+        }
       })), _react.default.createElement("ul", {
         id: "completedTasks"
       }, this.props.compTasks.map(function (task, idx) {
         return _react.default.createElement("li", {
-          key: idx
+          key: 'c' + idx
         }, task);
       }))));
     }
@@ -29088,6 +29151,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     },
     completeTask: function completeTask(cTask) {
       dispatch(compTask(cTask));
+    },
+    deleteTask: function deleteTask(dTask) {
+      dispatch(delTask(dTask));
     }
   };
 };

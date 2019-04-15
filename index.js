@@ -10,6 +10,7 @@ import { createStore } from 'redux';
 
 const ADD = 'ADD';
 const COMP = 'COMP';
+const DEL = 'DEL'
 
 // function for adding a task to the state
 
@@ -20,11 +21,20 @@ const addTask = (task) => {
     }
 };
 
-//function for completing a task
+// function for completing a task
 
 const compTask = (task) => {
     return {
         type: COMP,
+        task: task
+    }
+}
+
+// function for deleting a task
+
+const delTask = (task) => {
+    return {
+        type: DEL,
         task: task
     }
 }
@@ -36,11 +46,17 @@ const taskReducer = (state = { tasks: [] , compTasks: [] }, action) => {
         case ADD: 
             return { tasks: state.tasks.concat(action.task), compTasks: state.compTasks }
         case COMP:
-            let idx = state.tasks.indexOf(action.task);
-            let beg = state.tasks.slice(0, idx);
-            let end = state.tasks.slice(idx + 1, );
-            let newState = { tasks: [...beg, ...end], compTasks: state.compTasks.concat(action.task) };
-            return newState;
+            let cIdx = state.tasks.indexOf(action.task);
+            let cBeg = state.tasks.slice(0, cIdx);
+            let cEnd = state.tasks.slice(cIdx + 1, );
+            let newStateComp = { tasks: [...cBeg, ...cEnd], compTasks: state.compTasks.concat(action.task) };
+            return newStateComp;
+        case DEL:
+            let dIdx = state.tasks.indexOf(action.task);
+            let dBeg = state.tasks.slice(0, dIdx);
+            let dEnd = state.tasks.slice(dIdx + 1, );
+            let newStateDel = { tasks: [...dBeg, ...dEnd], compTasks: state.compTasks };
+            return newStateDel; 
         default: 
             return state;
     }
@@ -61,10 +77,13 @@ class Molehills extends React.Component {
         super(props);
         this.state = {
             input: '',
+            delTog: false
         }
         this.changeHandler = this.changeHandler.bind(this);
         this.submitHandler = this.submitHandler.bind(this);
         this.completeHandler = this.completeHandler.bind(this);
+        this.deleteToggleHandler = this.deleteToggleHandler.bind(this);
+        this.deleteHandler = this.deleteHandler.bind(this);
     }
     changeHandler(event) {
         this.setState ({
@@ -80,7 +99,29 @@ class Molehills extends React.Component {
     completeHandler(event) {
         this.props.completeTask(event.target.innerHTML)
     }
+    deleteToggleHandler() {
+        if (this.state.delTog) {
+            this.setState ({
+                delTog: false
+            })
+        }
+        else {
+            this.setState ({
+                delTog: true
+            })
+        } 
+    }
+    deleteHandler(event) {
+        this.props.deleteTask(event.target.innerHTML)
+    }
     render() {
+        const delTog = this.state.delTog;
+        let trash
+        if (delTog) {
+            trash = <i className = "fas fa-trash-alt"></i>
+        }
+        else
+            trash = null;
         return (
             <div id='mainapp'>
                 <div id='tasklist'>
@@ -91,11 +132,25 @@ class Molehills extends React.Component {
                     <button 
                         id = 'submitGoal'
                         onClick = {this.submitHandler} >Submit</button>
+                    <button 
+                        id = 'toggleDelete'
+                        onClick = {this.deleteToggleHandler} >Delete Task</button>
+                    { trash }
                     <ul id = 'currentTasks'>
                         {this.props.tasks.map( (task, idx) => {
-                            return (
-                                <li onClick = {this.completeHandler} key={idx}>{task}</li>
-                            )
+                            // maps tasks from state, with logic for the toggling of the delete button 
+                            if (this.state.delTog) {
+                                return (
+                                    <div className = 'itemWrapper'>
+                                        <li className = 'listItem delItem' onClick = {this.deleteHandler} key = {idx}>{task}</li>
+                                    </div>
+                                )
+                            }
+                            else {
+                                return (
+                                    <li onClick = {this.completeHandler} key = {idx}>{task}</li>
+                                )
+                            }
                         })
                     }
                     </ul>
@@ -131,6 +186,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         completeTask: (cTask) => {
             dispatch(compTask(cTask))
+        },
+        deleteTask: (dTask) => {
+            dispatch(delTask(dTask))
         }
     }
 };

@@ -28962,18 +28962,27 @@ var compTask = function compTask(task) {
 
 
 var taskReducer = function taskReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [[], []];
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+    tasks: [],
+    compTasks: []
+  };
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
     case ADD:
-      return [state[0].concat(action.task), _toConsumableArray(state[1])];
+      return {
+        tasks: state.tasks.concat(action.task),
+        compTasks: state.compTasks
+      };
 
     case COMP:
-      var idx = state[0].indexOf(action.task);
-      var beg = state.slice(0, idx);
-      var end = state.slice(idx + 1);
-      var newState = [[].concat(_toConsumableArray(beg), _toConsumableArray(end)), [].concat(_toConsumableArray(state[1]), [action.task])];
+      var idx = state.tasks.indexOf(action.task);
+      var beg = state.tasks.slice(0, idx);
+      var end = state.tasks.slice(idx + 1);
+      var newState = {
+        tasks: [].concat(_toConsumableArray(beg), _toConsumableArray(end)),
+        compTasks: state.compTasks.concat(action.task)
+      };
       return newState;
 
     default:
@@ -29024,7 +29033,7 @@ function (_React$Component) {
   }, {
     key: "completeHandler",
     value: function completeHandler(event) {
-      this.props.completeTask(event.target);
+      this.props.completeTask(event.target.innerHTML);
     }
   }, {
     key: "render",
@@ -29067,8 +29076,8 @@ function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    tasks: state[0],
-    compTasks: state[1]
+    tasks: state.tasks,
+    compTasks: state.compTasks
   };
 };
 
@@ -29140,7 +29149,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62238" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65327" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

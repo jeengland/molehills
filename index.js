@@ -31,15 +31,15 @@ const compTask = (task) => {
 
 // reducer for the tasklist
 
-const taskReducer = (state = [[],[]], action) => {
+const taskReducer = (state = { tasks: [] , compTasks: [] }, action) => {
     switch(action.type) {
         case ADD: 
-            return [state[0].concat(action.task), [...state[1]]];
+            return { tasks: state.tasks.concat(action.task), compTasks: state.compTasks }
         case COMP:
-            let idx = state[0].indexOf(action.task);
-            let beg = state.slice(0, idx);
-            let end = state.slice(idx + 1);
-            let newState = [[...beg, ...end], [...state[1], action.task]];
+            let idx = state.tasks.indexOf(action.task);
+            let beg = state.tasks.slice(0, idx);
+            let end = state.tasks.slice(idx + 1, );
+            let newState = { tasks: [...beg, ...end], compTasks: state.compTasks.concat(action.task) };
             return newState;
         default: 
             return state;
@@ -78,7 +78,7 @@ class Molehills extends React.Component {
         })
     }
     completeHandler(event) {
-        this.props.completeTask(event.target)
+        this.props.completeTask(event.target.innerHTML)
     }
     render() {
         return (
@@ -119,8 +119,8 @@ class Molehills extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        tasks: state[0],
-        compTasks: state[1]
+        tasks: state.tasks,
+        compTasks: state.compTasks
     }
 };
 

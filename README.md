@@ -9,12 +9,11 @@ Current features:
 * You can delete tasks
 * You can click on tasks to mark them as complete
 * You can click on uncomplete tasks to revert them to complete
+* Mobile responsive
 
 Imminent features
 
-* Styling of tasklist
 * Subtask creation
-* Possibly an uncompletion toggle?
 
 Future updates
 

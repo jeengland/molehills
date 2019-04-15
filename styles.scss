@@ -70,11 +70,7 @@ input:focus {
 #submitgoal {
     margin: 10px;
 }
-#trash {
-    position: absolute;
-    padding-top: 10px;
-    font-size: 30px;
-}
+
 #currentTasks {
     width: 45%;
     text-align: left;
@@ -96,12 +92,28 @@ li {
     color: #eb0000;
 }
 .delItem:hover {
-    color: #eb0000;
     font-style: italic;
+    color: #eb0000;
 }
+   
 
 @media screen and (max-width: 850px) {
     input {
         width: 90%;
+    }
+    button {
+        font-size: 15px;
+    }
+    
+    #buttonBar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #currentTasks {
+        width: 80%;
+    }
+    #completedTasks {
+        width: 80%;
     }
 }

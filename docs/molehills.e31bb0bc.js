@@ -29545,7 +29545,7 @@ function (_React$Component) {
           className: "fas fa-trash-alt"
         });
       } else {
-        trash = null;
+        trash = '';
       }
 
       return _react.default.createElement("div", {
@@ -29558,14 +29558,14 @@ function (_React$Component) {
         onChange: this.changeHandler,
         onKeyPress: this.enterHandler
       }), _react.default.createElement("div", {
-        id: "buttonbar"
+        id: "buttonBar"
       }, _react.default.createElement("button", {
         id: "submitGoal",
         onClick: this.submitHandler
       }, "Submit"), _react.default.createElement("button", {
         id: "toggleDelete",
         onClick: this.deleteToggleHandler
-      }, "Delete Task"), trash), _react.default.createElement("ul", {
+      }, "Delete Mode", trash)), _react.default.createElement("ul", {
         id: "currentTasks"
       }, this.props.tasks.map(function (task, idx) {
         // maps tasks from state, with logic for the toggling of the delete function
@@ -29681,7 +29681,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57647" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62101" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

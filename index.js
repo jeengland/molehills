@@ -151,7 +151,7 @@ class Molehills extends React.Component {
             trash = <i id = 'trash' className = "fas fa-trash-alt"></i>
         }
         else {
-            trash = null;
+            trash = '';
         }
         return (
             <div id='mainapp'>
@@ -161,14 +161,13 @@ class Molehills extends React.Component {
                         value = {this.state.input}
                         onChange = {this.changeHandler}
                         onKeyPress = {this.enterHandler} />
-                    <div id = "buttonbar">
+                    <div id = "buttonBar">
                         <button 
                             id = 'submitGoal'
                             onClick = {this.submitHandler} >Submit</button>
                         <button 
                             id = 'toggleDelete'
-                            onClick = {this.deleteToggleHandler} >Delete Task</button>
-                        { trash }
+                            onClick = {this.deleteToggleHandler} >Delete Mode{trash}</button>
                     </div>
                     {/* list for tasks that still need to be completed */}
                     <ul id = 'currentTasks'>

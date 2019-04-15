@@ -28944,7 +28944,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 // ---------------------------------------------------------------------
 var ADD = 'ADD';
 var COMP = 'COMP';
-var DEL = 'DEL'; // function for adding a task to the state
+var DEL = 'DEL';
+var UNCOMP = 'UNCOMP'; // function for adding a task to the state
 
 var addTask = function addTask(task) {
   return {
@@ -28965,6 +28966,14 @@ var compTask = function compTask(task) {
 var delTask = function delTask(task) {
   return {
     type: DEL,
+    task: task
+  };
+}; // function for uncompleting a task
+
+
+var uncTask = function uncTask(task) {
+  return {
+    type: UNCOMP,
     task: task
   };
 }; // reducer for the tasklist
@@ -29004,6 +29013,16 @@ var taskReducer = function taskReducer() {
       };
       return newStateDel;
 
+    case UNCOMP:
+      var uIdx = state.compTasks.indexOf(action.task);
+      var uBeg = state.compTasks.slice(0, uIdx);
+      var uEnd = state.compTasks.slice(uIdx + 1);
+      var newStateUnc = {
+        tasks: state.tasks.concat(action.task),
+        compTasks: [].concat(_toConsumableArray(uBeg), _toConsumableArray(uEnd))
+      };
+      return newStateUnc;
+
     default:
       return state;
   }
@@ -29034,6 +29053,7 @@ function (_React$Component) {
     _this.completeHandler = _this.completeHandler.bind(_assertThisInitialized(_this));
     _this.deleteToggleHandler = _this.deleteToggleHandler.bind(_assertThisInitialized(_this));
     _this.deleteHandler = _this.deleteHandler.bind(_assertThisInitialized(_this));
+    _this.uncompleteHandler = _this.uncompleteHandler.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -29076,11 +29096,17 @@ function (_React$Component) {
       this.props.deleteTask(event.target.innerHTML);
     }
   }, {
+    key: "uncompleteHandler",
+    value: function uncompleteHandler(event) {
+      this.props.uncompleteTask(event.target.innerHTML);
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
 
-      var delTog = this.state.delTog;
+      var delTog = this.state.delTog; // set up toggle for the trash icon
+
       var trash;
 
       if (delTog) {
@@ -29106,14 +29132,14 @@ function (_React$Component) {
       }, "Delete Task"), trash, _react.default.createElement("ul", {
         id: "currentTasks"
       }, this.props.tasks.map(function (task, idx) {
-        // maps tasks from state, with logic for the toggling of the delete button 
+        // maps tasks from state, with logic for the toggling of the delete function
         if (_this2.state.delTog) {
           return _react.default.createElement("div", {
             className: "itemWrapper"
           }, _react.default.createElement("li", {
             className: "listItem delItem",
             onClick: _this2.deleteHandler,
-            key: 'd' + idx
+            key: idx
           }, task));
         } else {
           return _react.default.createElement("li", {
@@ -29125,7 +29151,8 @@ function (_React$Component) {
         id: "completedTasks"
       }, this.props.compTasks.map(function (task, idx) {
         return _react.default.createElement("li", {
-          key: 'c' + idx
+          onClick: _this2.uncompleteHandler,
+          key: idx
         }, task);
       }))));
     }
@@ -29154,6 +29181,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     },
     deleteTask: function deleteTask(dTask) {
       dispatch(delTask(dTask));
+    },
+    uncompleteTask: function uncompleteTask(uTask) {
+      dispatch(uncTask(uTask));
     }
   };
 };
@@ -29215,7 +29245,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65327" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57647" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

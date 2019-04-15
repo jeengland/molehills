@@ -10,7 +10,8 @@ import { createStore } from 'redux';
 
 const ADD = 'ADD';
 const COMP = 'COMP';
-const DEL = 'DEL'
+const DEL = 'DEL';
+const UNCOMP = 'UNCOMP';
 
 // function for adding a task to the state
 
@@ -39,6 +40,15 @@ const delTask = (task) => {
     }
 }
 
+// function for uncompleting a task
+
+const uncTask = (task) => {
+    return {
+        type: UNCOMP,
+        task: task
+    }
+}
+
 // reducer for the tasklist
 
 const taskReducer = (state = { tasks: [] , compTasks: [] }, action) => {
@@ -57,6 +67,12 @@ const taskReducer = (state = { tasks: [] , compTasks: [] }, action) => {
             let dEnd = state.tasks.slice(dIdx + 1, );
             let newStateDel = { tasks: [...dBeg, ...dEnd], compTasks: state.compTasks };
             return newStateDel; 
+        case UNCOMP: 
+            let uIdx = state.compTasks.indexOf(action.task);
+            let uBeg = state.compTasks.slice(0, uIdx);
+            let uEnd = state.compTasks.slice(uIdx + 1, );
+            let newStateUnc = { tasks: state.tasks.concat(action.task), compTasks: [...uBeg, ...uEnd] };
+            return newStateUnc;
         default: 
             return state;
     }
@@ -84,6 +100,7 @@ class Molehills extends React.Component {
         this.completeHandler = this.completeHandler.bind(this);
         this.deleteToggleHandler = this.deleteToggleHandler.bind(this);
         this.deleteHandler = this.deleteHandler.bind(this);
+        this.uncompleteHandler = this.uncompleteHandler.bind(this);
     }
     changeHandler(event) {
         this.setState ({
@@ -114,8 +131,12 @@ class Molehills extends React.Component {
     deleteHandler(event) {
         this.props.deleteTask(event.target.innerHTML)
     }
+    uncompleteHandler(event) {
+        this.props.uncompleteTask(event.target.innerHTML)
+    }
     render() {
         const delTog = this.state.delTog;
+        // set up toggle for the trash icon
         let trash
         if (delTog) {
             trash = <i className = "fas fa-trash-alt"></i>
@@ -136,9 +157,10 @@ class Molehills extends React.Component {
                         id = 'toggleDelete'
                         onClick = {this.deleteToggleHandler} >Delete Task</button>
                     { trash }
+                    {/* list for tasks that still need to be completed */}
                     <ul id = 'currentTasks'>
                         {this.props.tasks.map( (task, idx) => {
-                            // maps tasks from state, with logic for the toggling of the delete button 
+                            // maps tasks from state, with logic for the toggling of the delete function
                             if (this.state.delTog) {
                                 return (
                                     <div className = 'itemWrapper'>
@@ -154,10 +176,11 @@ class Molehills extends React.Component {
                         })
                     }
                     </ul>
+                    {/* list for completed tasks */}
                     <ul id = 'completedTasks'>
                         {this.props.compTasks.map( (task, idx) => {
                             return (
-                                <li key={idx}>{task}</li>
+                                <li onClick = {this.uncompleteHandler} key={idx}>{task}</li>
                             )
                         })
                     }
@@ -189,6 +212,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         deleteTask: (dTask) => {
             dispatch(delTask(dTask))
+        },
+        uncompleteTask: (uTask) => {
+            dispatch(uncTask(uTask))
         }
     }
 };

@@ -8,8 +8,8 @@ import { createStore } from 'redux';
 // redux store 
 // ---------------------------------------------------------------------
 
-const ADD = 'ADD'
-const COMP = 'COMP'
+const ADD = 'ADD';
+const COMP = 'COMP';
 
 // function for adding a task to the state
 
@@ -36,7 +36,7 @@ const taskReducer = (state = [[],[]], action) => {
         case ADD: 
             return [state[0].concat(action.task), [...state[1]]];
         case COMP:
-            let idx = indexOf(state[0].filter(action.task));
+            let idx = state[0].indexOf(action.task);
             let beg = state.slice(0, idx);
             let end = state.slice(idx + 1);
             let newState = [[...beg, ...end], [...state[1], action.task]];
@@ -94,7 +94,7 @@ class Molehills extends React.Component {
                     <ul id = 'currentTasks'>
                         {this.props.tasks.map( (task, idx) => {
                             return (
-                                <li onKeyDown = {this.completeHandler(event.target)} key={idx}>{task}</li>
+                                <li onClick = {this.completeHandler(event.target)} key={idx}>{task}</li>
                             )
                         })
                     }

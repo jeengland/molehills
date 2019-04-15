@@ -28970,7 +28970,7 @@ var taskReducer = function taskReducer() {
       return [state[0].concat(action.task), _toConsumableArray(state[1])];
 
     case COMP:
-      var idx = indexOf(state[0].filter(action.task));
+      var idx = state[0].indexOf(action.task);
       var beg = state.slice(0, idx);
       var end = state.slice(idx + 1);
       var newState = [[].concat(_toConsumableArray(beg), _toConsumableArray(end)), [].concat(_toConsumableArray(state[1]), [action.task])];
@@ -29046,7 +29046,7 @@ function (_React$Component) {
         id: "currentTasks"
       }, this.props.tasks.map(function (task, idx) {
         return _react.default.createElement("li", {
-          onKeyDown: _this2.completeHandler(event.target),
+          onClick: _this2.completeHandler(event.target),
           key: idx
         }, task);
       })), _react.default.createElement("ul", {
@@ -29140,7 +29140,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64523" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52614" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

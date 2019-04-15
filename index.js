@@ -74,7 +74,7 @@ class Molehills extends React.Component {
     submitHandler() {
         this.props.submitNewTask(this.state.input);
         this.setState ({
-          input: '',
+          input: ''
         })
     }
     completeHandler(target) {

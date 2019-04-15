@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 import { createStore } from 'redux';
+import { EventEmitter } from 'events';
 
 // ---------------------------------------------------------------------
 // redux store 
@@ -101,6 +102,7 @@ class Molehills extends React.Component {
         this.deleteToggleHandler = this.deleteToggleHandler.bind(this);
         this.deleteHandler = this.deleteHandler.bind(this);
         this.uncompleteHandler = this.uncompleteHandler.bind(this);
+        this.enterHandler = this.enterHandler.bind(this);
     }
     changeHandler(event) {
         this.setState ({
@@ -108,10 +110,12 @@ class Molehills extends React.Component {
         })
     }
     submitHandler() {
-        this.props.submitNewTask(this.state.input);
-        this.setState ({
-          input: ''
-        })
+        if (this.state.input != '') {
+            this.props.submitNewTask(this.state.input);
+            this.setState ({
+            input: ''
+            })
+        }
     }
     completeHandler(event) {
         this.props.completeTask(event.target.innerHTML)
@@ -134,43 +138,54 @@ class Molehills extends React.Component {
     uncompleteHandler(event) {
         this.props.uncompleteTask(event.target.innerHTML)
     }
+    enterHandler(event) {
+        if (event.key == 'Enter'){
+            document.getElementById('submitGoal').click()
+        }
+    }
     render() {
         const delTog = this.state.delTog;
         // set up toggle for the trash icon
         let trash
         if (delTog) {
-            trash = <i className = "fas fa-trash-alt"></i>
+            trash = <i id = 'trash' className = "fas fa-trash-alt"></i>
         }
-        else
+        else {
             trash = null;
+        }
         return (
             <div id='mainapp'>
                 <div id='tasklist'>
                     <input 
                         id = 'newGoal'
                         value = {this.state.input}
-                        onChange = {this.changeHandler} />
-                    <button 
-                        id = 'submitGoal'
-                        onClick = {this.submitHandler} >Submit</button>
-                    <button 
-                        id = 'toggleDelete'
-                        onClick = {this.deleteToggleHandler} >Delete Task</button>
-                    { trash }
+                        onChange = {this.changeHandler}
+                        onKeyPress = {this.enterHandler} />
+                    <div id = "buttonbar">
+                        <button 
+                            id = 'submitGoal'
+                            onClick = {this.submitHandler} >Submit</button>
+                        <button 
+                            id = 'toggleDelete'
+                            onClick = {this.deleteToggleHandler} >Delete Task</button>
+                        { trash }
+                    </div>
                     {/* list for tasks that still need to be completed */}
                     <ul id = 'currentTasks'>
                         {this.props.tasks.map( (task, idx) => {
                             // maps tasks from state, with logic for the toggling of the delete function
                             if (this.state.delTog) {
                                 return (
-                                    <div className = 'itemWrapper'>
+                                    <div>
                                         <li className = 'listItem delItem' onClick = {this.deleteHandler} key = {idx}>{task}</li>
                                     </div>
                                 )
                             }
                             else {
                                 return (
-                                    <li onClick = {this.completeHandler} key = {idx}>{task}</li>
+                                    <div>
+                                        <li className = 'listItem' onClick = {this.completeHandler} key = {idx}>{task}</li>
+                                    </div>
                                 )
                             }
                         })
@@ -180,7 +195,7 @@ class Molehills extends React.Component {
                     <ul id = 'completedTasks'>
                         {this.props.compTasks.map( (task, idx) => {
                             return (
-                                <li onClick = {this.uncompleteHandler} key={idx}>{task}</li>
+                                <li className = 'completeItem' onClick = {this.uncompleteHandler} key={idx}>{task}</li>
                             )
                         })
                     }

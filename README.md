@@ -16,4 +16,13 @@ Imminent features
 * Subtask creation
 * Possibly an uncompletion toggle?
 
+Future updates
+
+* Drag and drop
+* Calendar page
+* Goals page
+* Persistent goals
+* Login to track goals
+
+
 Latest update 04/15/2019

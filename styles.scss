@@ -1,15 +1,107 @@
+body {
+    background-color: #293040;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+button {
+    font-family: inherit;
+    font-size: inherit;
+    background-color: #735871;
+    border: none;
+    border-radius: 13px;
+    color: white;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+}
+button:hover {
+    box-shadow: 0 0 0 2px #293040;
+}
+button:active {
+    background-color: #F2BFAC;
+}
+button:focus {
+    outline:0;
+    color: lightgrey;
+}
+input {
+    font-family: inherit;
+    font-size: inherit;
+    padding: 5px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid #735871;
+    width: 40%;
+}
+input:focus {
+    outline: 0px;
+}
+#root {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+#mainapp {
+    height: auto;
+    width: 92%;
+    background-color: #252140;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+}
+#tasklist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #BF847E;
+    height: auto;
+    width: 90%;
+    min-height: 100%;
+}
+#newgoal {
+    margin: 10px;
+}
+#submitgoal {
+    margin: 10px;
+}
+#trash {
+    position: absolute;
+    padding-top: 10px;
+    font-size: 30px;
+}
+#currentTasks {
+    width: 45%;
+    text-align: left;
+}
 #completedTasks {
+    width: 45%;
+    text-align: left;
     color: grey;
     text-decoration: line-through;
+}
+li {
+    overflow-wrap: break-word;
 }
 .itemWrapper {
     display: flex;
 }
 .fa-trash-alt {
     padding-left: 6px;
-    color: red;
+    color: #eb0000;
 }
 .delItem:hover {
-    color: red;
-    font-weight: bold;
+    color: #eb0000;
+    font-style: italic;
+}
+
+@media screen and (max-width: 850px) {
+    input {
+        width: 90%;
+    }
 }
